@@ -1,7 +1,9 @@
-import { Alert, Button, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Alert, Button, Dimensions, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useState } from 'react'
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Clipboard from '@react-native-clipboard/clipboard';
+import Snackbar from 'react-native-snackbar';
+
 
 const App = () => {
 
@@ -37,20 +39,28 @@ const App = () => {
     return
   }
 
-  const copyPassword = (password:string) => {
+  const copyPassword = (password: string) => {
     Clipboard.setString(password);
-    Alert.alert("Password Copied!")
+    Snackbar.show({
+      text: 'Text copied!',
+      backgroundColor:'green'
+    });
   }
-
 
   const generatePassword = async () => {
     const passwordLength = parseInt(inputValue);
-    if (passwordLength > 18) {
-      Alert.alert("Password length cant be greater than 18!")
+    if (passwordLength > 30) {
+      Snackbar.show({
+        text: "Password can't be greater than 30 character!",
+        backgroundColor:'red'
+      });
       return
     }
     else if (passwordLength < 8) {
-      Alert.alert("Password should have at lest 8 character")
+      Snackbar.show({
+        text: 'Password must have at least 8 character!',
+        backgroundColor:'red'
+      });
       return
     }
 
@@ -64,71 +74,75 @@ const App = () => {
     resetState();
   }
 
+  const screenHeight = Dimensions.get('window').height;
+
   return (
     <SafeAreaView>
-      <View style={styles.heading} >
-        <Text style={styles.headingText} >Password Generator</Text>
-        <Text style={styles.headingTextSecond}>You deserve a better password!</Text>
-      </View>
-
-      <View style={styles.generatedPasswordContainer} >
-        <Pressable>
-          <Text  onPress={()=>{copyPassword(passwordValue)}} style={styles.generatedPassword}>{passwordValue}</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.checkboxContainer} >
-
-        <View style={styles.checkbox} >
-          <BouncyCheckbox
-            disableBuiltInState
-            fillColor='black'
-            isChecked={number}
-            onPress={() => { setNumber(!number) }}
-          />
-          <Text style={styles.checkboxText}>Numeric character</Text>
+      <View style={{height:screenHeight,backgroundColor:'white'}} >
+        <View style={styles.heading} >
+          <Text style={styles.headingText} >Password Generator</Text>
+          <Text style={styles.headingTextSecond}>You deserve a better password!</Text>
         </View>
 
-        <View style={styles.checkbox} >
-          <BouncyCheckbox
-            disableBuiltInState
-            fillColor='black'
-            isChecked={lowercase}
-            onPress={() => { setLowercase(!lowercase) }}
-          />
-          <Text style={styles.checkboxText}>Lowercase character</Text>
+        <View style={styles.generatedPasswordContainer} >
+          <Pressable>
+            <Text onPress={() => { copyPassword(passwordValue) }} style={styles.generatedPassword}>{passwordValue}</Text>
+          </Pressable>
         </View>
 
-        <View style={styles.checkbox} >
-          <BouncyCheckbox
-            disableBuiltInState
-            fillColor='black'
-            isChecked={uppercase}
-            onPress={() => { setUppercase(!uppercase) }}
-          />
-          <Text style={styles.checkboxText}>Uppercase character</Text>
+        <View style={styles.checkboxContainer} >
+
+          <View style={styles.checkbox} >
+            <BouncyCheckbox
+              disableBuiltInState
+              fillColor='black'
+              isChecked={number}
+              onPress={() => { setNumber(!number) }}
+            />
+            <Text style={styles.checkboxText}>Numeric character</Text>
+          </View>
+
+          <View style={styles.checkbox} >
+            <BouncyCheckbox
+              disableBuiltInState
+              fillColor='black'
+              isChecked={lowercase}
+              onPress={() => { setLowercase(!lowercase) }}
+            />
+            <Text style={styles.checkboxText}>Lowercase character</Text>
+          </View>
+
+          <View style={styles.checkbox} >
+            <BouncyCheckbox
+              disableBuiltInState
+              fillColor='black'
+              isChecked={uppercase}
+              onPress={() => { setUppercase(!uppercase) }}
+            />
+            <Text style={styles.checkboxText}>Uppercase character</Text>
+          </View>
+
+          <View style={styles.checkbox} >
+            <BouncyCheckbox
+              disableBuiltInState
+              fillColor='black'
+              isChecked={specialCharacter}
+              onPress={() => { setSpecialCharacter(!specialCharacter) }}
+            />
+            <Text style={styles.checkboxText}>Special character</Text>
+          </View>
+
         </View>
 
-        <View style={styles.checkbox} >
-          <BouncyCheckbox
-            disableBuiltInState
-            fillColor='black'
-            isChecked={specialCharacter}
-            onPress={() => { setSpecialCharacter(!specialCharacter) }}
-          />
-          <Text style={styles.checkboxText}>Special character</Text>
+        <View style={styles.inputContainer} >
+          <TextInput keyboardType='numeric' style={styles.inputDec} value={inputValue} onChangeText={(text) => setInputValue(text)} placeholder='Enter the length of password' />
         </View>
 
-      </View>
-
-      <View style={styles.inputContainer} >
-        <TextInput keyboardType='numeric' style={styles.inputDec} value={inputValue} onChangeText={(text) => setInputValue(text)} placeholder='Enter the length of password' />
-      </View>
-
-      <View style={styles.buttonContainer} >
-        <Pressable>
-          <Text onPress={generatePassword} style={styles.button} >Generate</Text>
-        </Pressable>
+        <View style={styles.buttonContainer} >
+          <Pressable>
+            <Text onPress={generatePassword} style={styles.button} >Generate</Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -154,7 +168,6 @@ const styles = StyleSheet.create({
   },
 
   generatedPasswordContainer: {
-    backgroundColor: 'white',
     height: 150,
     display: 'flex',
     alignItems: 'center',
